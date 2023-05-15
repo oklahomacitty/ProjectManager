@@ -6,4 +6,6 @@
     </style>
 
     <style name="Theme.ProjectManager" parent="Base.Theme.ProjectManager"/>
+
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 </resources>
