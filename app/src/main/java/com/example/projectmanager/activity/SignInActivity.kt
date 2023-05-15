@@ -16,7 +16,7 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 
 class SignInActivity : BaseActivity() {
-    private val TAG = "SignInActivity"
+    private val TAG = this.javaClass.simpleName
     private var binding: ActivitySignInBinding? = null
     private lateinit var auth: FirebaseAuth
 
