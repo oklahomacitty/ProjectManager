@@ -46,11 +46,7 @@ open class BaseActivity : AppCompatActivity() {
             return
         }
         this.doubleBackToExitPressedOnce = true
-        Toast.makeText(
-            this,
-            resources.getString(R.string.please_click_back_again_to_exit),
-            Toast.LENGTH_SHORT
-        ).show()
+        showToast(getString(R.string.please_click_back_again_to_exit))
 
         Handler().postDelayed({doubleBackToExitPressedOnce = false}, 2000)
     }
@@ -62,5 +58,9 @@ open class BaseActivity : AppCompatActivity() {
         snackBarView.setBackgroundColor(ContextCompat.getColor(this,
             R.color.snacknar_error_color))
         snackBar.show()
+    }
+
+    fun showToast(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 }

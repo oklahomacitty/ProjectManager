@@ -2,6 +2,7 @@ package com.example.projectmanager.firebase
 
 import android.util.Log
 import com.example.projectmanager.Constants
+import com.example.projectmanager.activity.SignInActivity
 import com.example.projectmanager.activity.SignUpActivity
 import com.example.projectmanager.model.User
 import com.google.firebase.auth.FirebaseAuth
@@ -18,11 +19,25 @@ class FirestoreClass {
             .addOnSuccessListener {
                 activity.userRegisteredSuccess()
             }.addOnFailureListener {
-                e -> Log.e(activity.javaClass.simpleName, "Error")
+                Log.e(activity.javaClass.simpleName, "Error writing document")
             }
     }
 
-    private fun getCurrentUserId(): String {
-        return FirebaseAuth.getInstance().currentUser!!.uid
+    fun signInUser(activity: SignInActivity) {
+        mFireStore.collection(Constants.USERS)
+            .document(getCurrentUserId())
+            .get()
+            .addOnSuccessListener {document ->
+                val loggedUser = document.toObject(User::class.java)
+                loggedUser?.let { activity.signInSuccess(loggedUser) }
+            }.addOnFailureListener {
+                Log.e(activity.javaClass.simpleName, "Error writing document")
+            }
+    }
+
+    fun getCurrentUserId(): String {
+        var currentUser = FirebaseAuth.getInstance().currentUser
+        return currentUser?.uid ?: ""
+
     }
 }

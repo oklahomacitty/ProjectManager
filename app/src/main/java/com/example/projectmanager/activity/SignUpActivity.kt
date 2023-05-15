@@ -1,13 +1,11 @@
 package com.example.projectmanager.activity
 
 import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.TextUtils
 import android.view.WindowInsets
 import android.view.WindowInsetsController
 import android.view.WindowManager
-import android.widget.Toast
 import com.example.projectmanager.R
 import com.example.projectmanager.databinding.ActivitySignUpBinding
 import com.example.projectmanager.firebase.FirestoreClass
@@ -30,7 +28,7 @@ class SignUpActivity : BaseActivity() {
     }
 
     fun userRegisteredSuccess() {
-        Toast.makeText(this,"You have successfully registered", Toast.LENGTH_LONG).show()
+        showToast("You have successfully registered")
         hideProgressDialog()
         FirebaseAuth.getInstance().signOut()
         finish()
@@ -72,19 +70,16 @@ class SignUpActivity : BaseActivity() {
         val password: String = binding?.etPassword?.text.toString().trim{ it <= ' '}
 
         if (validateForm(name, email, password)) {
-            showProgressDialog(resources.getString(R.string.please_wait))
+            showProgressDialog(getString(R.string.please_wait))
             FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    val firebaseUser: FirebaseUser = task.result!!.user!!
+                    val firebaseUser: FirebaseUser = task.result.user!!
                     val registeredEmail = firebaseUser.email
                     val user = User(firebaseUser.uid, name, registeredEmail!!)
                     FirestoreClass().registerUser(this, user)
                 } else {
-                    Toast.makeText(
-                        this,
-                        "Registration failed",
-                        Toast.LENGTH_LONG).show()
+                    showToast("Registration failed")
                 }
             }
         }

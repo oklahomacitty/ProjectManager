@@ -10,6 +10,7 @@ import android.view.WindowInsets
 import android.view.WindowInsetsController
 import android.view.WindowManager
 import com.example.projectmanager.databinding.ActivitySplashBinding
+import com.example.projectmanager.firebase.FirestoreClass
 
 class SplashActivity : AppCompatActivity() {
     private var binding: ActivitySplashBinding? = null
@@ -24,7 +25,12 @@ class SplashActivity : AppCompatActivity() {
         binding?.tvAppName?.typeface = typeFace
 
         Handler().postDelayed({
-            startActivity(Intent(this, IntroActivity::class.java))
+            var currentUserId = FirestoreClass().getCurrentUserId()
+            if (currentUserId.isNotEmpty()) {
+                startActivity(Intent(this, MainActivity::class.java))
+            } else {
+                startActivity(Intent(this, IntroActivity::class.java))
+            }
             finish()
         }, 2500)
 
