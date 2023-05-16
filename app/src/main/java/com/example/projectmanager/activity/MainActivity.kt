@@ -3,12 +3,19 @@ package com.example.projectmanager.activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.core.view.GravityCompat
+import com.bumptech.glide.Glide
 import com.example.projectmanager.R
 import com.example.projectmanager.databinding.ActivityMainBinding
 import com.example.projectmanager.databinding.AppBarMainBinding
+import com.example.projectmanager.databinding.NavHeaderMainBinding
+import com.example.projectmanager.firebase.FirestoreClass
+import com.example.projectmanager.model.User
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
+import de.hdodenhof.circleimageview.CircleImageView
 
 class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedListener {
     private var binding: ActivityMainBinding? = null
@@ -18,6 +25,8 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         setContentView(binding?.root)
         setupActionBar()
         binding?.navView?.setNavigationItemSelectedListener(this)
+
+        FirestoreClass().signInUser(this)
     }
 
     private fun setupActionBar() {
@@ -46,6 +55,20 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         }
     }
 
+    fun updateNavigationUserDetails (user: User) {
+        val viewHeader = binding?.navView?.getHeaderView(0)
+        val navHeaderBinding: NavHeaderMainBinding = NavHeaderMainBinding.bind(viewHeader!!)
+
+        Glide
+            .with(this)
+            .load(user.image)
+            .centerCrop()
+            .placeholder(R.drawable.ic_user_place_holder)
+            .into(navHeaderBinding.navUserImage)
+
+        navHeaderBinding.tvUsername.text = user.name
+    }
+
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when(item.itemId) {
             R.id.nav_my_profile -> {
@@ -61,5 +84,10 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         }
         binding?.drawerLayout!!.closeDrawer(GravityCompat.START)
         return true
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        binding = null
     }
 }
