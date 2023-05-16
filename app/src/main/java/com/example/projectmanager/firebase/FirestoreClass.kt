@@ -4,6 +4,7 @@ import android.app.Activity
 import android.util.Log
 import com.example.projectmanager.Constants
 import com.example.projectmanager.activity.MainActivity
+import com.example.projectmanager.activity.ProfileActivity
 import com.example.projectmanager.activity.SignInActivity
 import com.example.projectmanager.activity.SignUpActivity
 import com.example.projectmanager.model.User
@@ -25,19 +26,22 @@ class FirestoreClass {
             }
     }
 
-    fun signInUser(activity: Activity) {
+    fun loadUserData(activity: Activity) {
         mFireStore.collection(Constants.USERS)
             .document(getCurrentUserId())
             .get()
             .addOnSuccessListener {document ->
-                val loggedUser = document.toObject(User::class.java)
+                val loggedUser = document.toObject(User::class.java)!!
 
-                when(activity) {
+                when (activity) {
                     is SignInActivity -> {
-                        loggedUser?.let { activity.signInSuccess(loggedUser) }
+                        activity.signInSuccess(loggedUser)
                     }
                     is MainActivity -> {
-                        loggedUser?.let { activity.updateNavigationUserDetails(loggedUser) }
+                        activity.updateNavigationUserDetails(loggedUser)
+                    }
+                    is ProfileActivity -> {
+                        activity.setUserDataInUI(loggedUser)
                     }
                 }
             }.addOnFailureListener {

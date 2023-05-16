@@ -3,19 +3,15 @@ package com.example.projectmanager.activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
-import android.widget.ImageView
-import android.widget.TextView
 import androidx.core.view.GravityCompat
 import com.bumptech.glide.Glide
 import com.example.projectmanager.R
 import com.example.projectmanager.databinding.ActivityMainBinding
-import com.example.projectmanager.databinding.AppBarMainBinding
 import com.example.projectmanager.databinding.NavHeaderMainBinding
 import com.example.projectmanager.firebase.FirestoreClass
 import com.example.projectmanager.model.User
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
-import de.hdodenhof.circleimageview.CircleImageView
 
 class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedListener {
     private var binding: ActivityMainBinding? = null
@@ -26,7 +22,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         setupActionBar()
         binding?.navView?.setNavigationItemSelectedListener(this)
 
-        FirestoreClass().signInUser(this)
+        FirestoreClass().loadUserData(this)
     }
 
     private fun setupActionBar() {
@@ -60,7 +56,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         val navHeaderBinding: NavHeaderMainBinding = NavHeaderMainBinding.bind(viewHeader!!)
 
         Glide
-            .with(this)
+            .with(this@MainActivity)
             .load(user.image)
             .centerCrop()
             .placeholder(R.drawable.ic_user_place_holder)
@@ -72,7 +68,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when(item.itemId) {
             R.id.nav_my_profile -> {
-                showToast("My profile")
+                startActivity(Intent(this, ProfileActivity::class.java))
             }
             R.id.nav_sign_out -> {
                 FirebaseAuth.getInstance().signOut()
