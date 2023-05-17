@@ -18,11 +18,29 @@ class FirestoreClass {
 
     fun registerUser(activity: SignUpActivity, userInfo: User) {
         mFireStore.collection(Constants.USERS)
-            .document(getCurrentUserId()).set(userInfo, SetOptions.merge())
+            .document(getCurrentUserId())
+            .set(userInfo, SetOptions.merge())
             .addOnSuccessListener {
                 activity.userRegisteredSuccess()
             }.addOnFailureListener {
                 Log.e(activity.javaClass.simpleName, "Error writing document")
+            }
+    }
+
+    fun updateUserProfileData(activity: ProfileActivity,
+                              userHashMap: HashMap<String, Any>) {
+        mFireStore.collection(Constants.USERS)
+            .document(getCurrentUserId())
+            .update(userHashMap)
+            .addOnSuccessListener {
+                Log.i(activity.javaClass.simpleName, "Profile Data updated successfully")
+                activity.showToast("Profile updated successfully")
+                activity.profileUpdateSuccess()
+            }.addOnFailureListener {
+                e ->
+                activity.hideProgressDialog()
+                Log.e(activity.javaClass.simpleName, "Error while created a board.", e)
+                activity.showToast("Error when updating profile")
             }
     }
 
@@ -50,6 +68,9 @@ class FirestoreClass {
                         activity.hideProgressDialog()
                     }
                     is MainActivity -> {
+                        activity.hideProgressDialog()
+                    }
+                    is ProfileActivity -> {
                         activity.hideProgressDialog()
                     }
                 }
