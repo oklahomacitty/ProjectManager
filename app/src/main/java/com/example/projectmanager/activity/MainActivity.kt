@@ -1,7 +1,9 @@
 package com.example.projectmanager.activity
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.MenuItem
 import androidx.core.view.GravityCompat
 import com.bumptech.glide.Glide
@@ -15,6 +17,10 @@ import com.google.firebase.auth.FirebaseAuth
 
 class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedListener {
     private var binding: ActivityMainBinding? = null
+
+    companion object {
+        const val MY_PROFILE_REQUEST_CODE: Int = 11
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -64,11 +70,21 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
         navHeaderBinding.tvUsername.text = user.name
     }
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        //TODO Change deprecation method
+        if (resultCode == Activity.RESULT_OK && requestCode == MY_PROFILE_REQUEST_CODE) {
+            FirestoreClass().loadUserData(this)
+        } else {
+            Log.e("onActivityResult() canceled", "Canceled")
+        }
+    }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when(item.itemId) {
             R.id.nav_my_profile -> {
-                startActivity(Intent(this, ProfileActivity::class.java))
+                startActivityForResult(Intent(this, ProfileActivity::class.java),
+                    MY_PROFILE_REQUEST_CODE)
             }
             R.id.nav_sign_out -> {
                 FirebaseAuth.getInstance().signOut()
