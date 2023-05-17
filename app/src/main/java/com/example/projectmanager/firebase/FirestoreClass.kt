@@ -3,11 +3,13 @@ package com.example.projectmanager.firebase
 import android.app.Activity
 import android.util.Log
 import com.example.projectmanager.Constants
+import com.example.projectmanager.activity.CreateBoardActivity
 import com.example.projectmanager.activity.MainActivity
 import com.example.projectmanager.activity.ProfileActivity
 import com.example.projectmanager.activity.SignInActivity
 import com.example.projectmanager.activity.SignUpActivity
-import com.example.projectmanager.model.User
+import com.example.projectmanager.models.Board
+import com.example.projectmanager.models.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
@@ -23,6 +25,21 @@ class FirestoreClass {
             .addOnSuccessListener {
                 activity.userRegisteredSuccess()
             }.addOnFailureListener {
+                Log.e(activity.javaClass.simpleName, "Error writing document")
+            }
+    }
+
+    fun createBoard(activity: CreateBoardActivity, board: Board) {
+        mFireStore.collection(Constants.BOARDS)
+            .document()
+            .set(board, SetOptions.merge())
+            .addOnSuccessListener {
+                Log.e(activity.javaClass.simpleName, "Board created successfully")
+                activity.showToast("Board created successfully")
+                activity.boardCreatedSuccessfully()
+            }.addOnFailureListener {
+                activity.hideProgressDialog()
+                activity.showToast("Error creating a Board")
                 Log.e(activity.javaClass.simpleName, "Error writing document")
             }
     }
@@ -79,7 +96,7 @@ class FirestoreClass {
     }
 
     fun getCurrentUserId(): String {
-        var currentUser = FirebaseAuth.getInstance().currentUser
+        val currentUser = FirebaseAuth.getInstance().currentUser
         return currentUser?.uid ?: ""
 
     }

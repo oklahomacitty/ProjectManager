@@ -9,7 +9,7 @@ import android.view.WindowManager
 import com.example.projectmanager.R
 import com.example.projectmanager.databinding.ActivitySignUpBinding
 import com.example.projectmanager.firebase.FirestoreClass
-import com.example.projectmanager.model.User
+import com.example.projectmanager.models.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 

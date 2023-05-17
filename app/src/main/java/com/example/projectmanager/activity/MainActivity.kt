@@ -7,11 +7,12 @@ import android.util.Log
 import android.view.MenuItem
 import androidx.core.view.GravityCompat
 import com.bumptech.glide.Glide
+import com.example.projectmanager.Constants
 import com.example.projectmanager.R
 import com.example.projectmanager.databinding.ActivityMainBinding
 import com.example.projectmanager.databinding.NavHeaderMainBinding
 import com.example.projectmanager.firebase.FirestoreClass
-import com.example.projectmanager.model.User
+import com.example.projectmanager.models.User
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
 
@@ -21,6 +22,9 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     companion object {
         const val MY_PROFILE_REQUEST_CODE: Int = 11
     }
+
+    private lateinit var mUserName: String
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -29,12 +33,19 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         binding?.navView?.setNavigationItemSelectedListener(this)
 
         FirestoreClass().loadUserData(this)
+
+        binding?.includedAppBarMain?.fabCreateBoard?.setOnClickListener {
+            val intent = Intent(this, CreateBoardActivity::class.java)
+            intent.putExtra(Constants.NAME, mUserName)
+            startActivity(intent)
+        }
     }
 
     private fun setupActionBar() {
         binding?.apply {
             setSupportActionBar(includedAppBarMain.toolbarMainActivity)
             includedAppBarMain.toolbarMainActivity.setNavigationIcon(R.drawable.ic_action_navigation_menu)
+            includedAppBarMain.toolbarMainActivity.title = getString(R.string.app_name)
             includedAppBarMain.toolbarMainActivity.setNavigationOnClickListener {
                 toggleDrawer()
             }
@@ -60,6 +71,8 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     fun updateNavigationUserDetails (user: User) {
         val viewHeader = binding?.navView?.getHeaderView(0)
         val navHeaderBinding: NavHeaderMainBinding = NavHeaderMainBinding.bind(viewHeader!!)
+
+        mUserName = user.name
 
         Glide
             .with(this@MainActivity)
