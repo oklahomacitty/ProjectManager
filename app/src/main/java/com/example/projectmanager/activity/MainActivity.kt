@@ -63,7 +63,9 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
             adapter.setOnCLickListener(object: BoardItemsAdapter.OnClickListener{
                 override fun onClick(position: Int, board: Board) {
-                    startActivity(Intent(this@MainActivity, TaskListActivity::class.java))
+                    val intent = Intent(this@MainActivity, TaskListActivity::class.java)
+                    intent.putExtra(Constants.DOCUMENT_ID, board.documentId)
+                    startActivity(intent)
                 }
             })
         } else {

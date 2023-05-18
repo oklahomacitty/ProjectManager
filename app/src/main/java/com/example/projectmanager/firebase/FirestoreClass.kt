@@ -8,11 +8,13 @@ import com.example.projectmanager.activity.MainActivity
 import com.example.projectmanager.activity.ProfileActivity
 import com.example.projectmanager.activity.SignInActivity
 import com.example.projectmanager.activity.SignUpActivity
+import com.example.projectmanager.activity.TaskListActivity
 import com.example.projectmanager.models.Board
 import com.example.projectmanager.models.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
+import com.google.firebase.firestore.ktx.toObject
 
 class FirestoreClass {
 
@@ -58,6 +60,20 @@ class FirestoreClass {
                      boardList.add(board)
                  }
                 activity.populateBoardsListToUI(boardList)
+            }.addOnFailureListener {e ->
+                activity.hideProgressDialog()
+                Log.e(activity.javaClass.simpleName, "Error while creating a board.", e)
+            }
+    }
+
+    fun getBoardDetails(activity: TaskListActivity, boardDocumentId: String) {
+        mFireStore.collection(Constants.BOARDS)
+            .document(boardDocumentId)
+            .get()
+            .addOnSuccessListener {
+                    document ->
+                Log.i(activity.javaClass.simpleName, document.toString())
+                activity.boardDetails(document.toObject(Board::class.java)!!)
             }.addOnFailureListener {e ->
                 activity.hideProgressDialog()
                 Log.e(activity.javaClass.simpleName, "Error while creating a board.", e)

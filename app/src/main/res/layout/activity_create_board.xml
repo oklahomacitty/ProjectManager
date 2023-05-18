@@ -15,7 +15,8 @@
             android:id="@+id/toolbar_create_board_activity"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="@color/colorAccent" />
+            android:background="@color/colorAccent"
+            app:titleTextColor="@color/white"/>
     </com.google.android.material.appbar.AppBarLayout>
 
     <LinearLayout
