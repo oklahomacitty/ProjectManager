@@ -44,6 +44,26 @@ class FirestoreClass {
             }
     }
 
+    fun getBoardsList(activity: MainActivity) {
+        mFireStore.collection(Constants.BOARDS)
+            .whereArrayContains(Constants.ASSIGNED_TO, getCurrentUserId())
+            .get()
+            .addOnSuccessListener {
+                document ->
+                Log.i(activity.javaClass.simpleName, document.documents.toString())
+                val boardList: ArrayList<Board> = ArrayList()
+                 for (i in document.documents) {
+                     val board = i.toObject(Board::class.java)!!
+                     board.documentId = i.id
+                     boardList.add(board)
+                 }
+                activity.populateBoardsListToUI(boardList)
+            }.addOnFailureListener {e ->
+                activity.hideProgressDialog()
+                Log.e(activity.javaClass.simpleName, "Error while creating a board.", e)
+            }
+    }
+
     fun updateUserProfileData(activity: ProfileActivity,
                               userHashMap: HashMap<String, Any>) {
         mFireStore.collection(Constants.USERS)
@@ -56,12 +76,12 @@ class FirestoreClass {
             }.addOnFailureListener {
                 e ->
                 activity.hideProgressDialog()
-                Log.e(activity.javaClass.simpleName, "Error while created a board.", e)
+                Log.e(activity.javaClass.simpleName, "Error when updating profile", e)
                 activity.showToast("Error when updating profile")
             }
     }
 
-    fun loadUserData(activity: Activity) {
+    fun loadUserData(activity: Activity, readBoardsList: Boolean = false) {
         mFireStore.collection(Constants.USERS)
             .document(getCurrentUserId())
             .get()
@@ -73,7 +93,7 @@ class FirestoreClass {
                         activity.signInSuccess(loggedUser)
                     }
                     is MainActivity -> {
-                        activity.updateNavigationUserDetails(loggedUser)
+                        activity.updateNavigationUserDetails(loggedUser, readBoardsList)
                     }
                     is ProfileActivity -> {
                         activity.setUserDataInUI(loggedUser)

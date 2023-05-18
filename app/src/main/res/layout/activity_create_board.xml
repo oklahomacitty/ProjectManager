@@ -15,7 +15,7 @@
             android:id="@+id/toolbar_create_board_activity"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            app:popupTheme="@style/AppTheme.PopupOverlay"/>
+            android:background="@color/colorAccent" />
     </com.google.android.material.appbar.AppBarLayout>
 
     <LinearLayout
