@@ -1,5 +1,6 @@
 package com.example.projectmanager.adapters
 
+import android.app.AlertDialog
 import android.content.Context
 import android.content.res.Resources
 import android.view.LayoutInflater
@@ -19,7 +20,7 @@ class TaskListItemsAdapter (private val context: Context, var taskList: ArrayLis
 
     class ViewHolder(private val itemBinding: ItemTaskBinding) :
         RecyclerView.ViewHolder(itemBinding.root) {
-        fun bind(context: Context, task: Task) {
+        fun bind(context: Context, position: Int, task: Task) {
             itemBinding.tvTaskListTitle.text = task.title
             itemBinding.tvAddTaskList.setOnClickListener {
                 itemBinding.tvAddTaskList.visibility = View.GONE
@@ -29,7 +30,6 @@ class TaskListItemsAdapter (private val context: Context, var taskList: ArrayLis
                 itemBinding.tvAddTaskList.visibility = View.VISIBLE
                 itemBinding.cvAddTaskListName.visibility = View.GONE
             }
-
             itemBinding.ibDoneListName.setOnClickListener {
                 val listName = itemBinding.etTaskListName.text.toString()
                 if (listName.isNotEmpty()) {
@@ -40,7 +40,52 @@ class TaskListItemsAdapter (private val context: Context, var taskList: ArrayLis
                     Toast.makeText(context, "Please Enter List Name.", Toast.LENGTH_SHORT).show()
                 }
             }
+            itemBinding.ibEditListName.setOnClickListener {
+                itemBinding.etEditTaskListName.setText(task.title)
+                itemBinding.llTitleView.visibility = View.GONE
+                itemBinding.cvEditTaskListName.visibility = View.VISIBLE
+            }
+            itemBinding.ibCloseEditableView.setOnClickListener {
+                itemBinding.llTitleView.visibility = View.VISIBLE
+                itemBinding.cvEditTaskListName.visibility = View.GONE
+            }
+            itemBinding.ibDoneEditListName.setOnClickListener {
+                val listName = itemBinding.etEditTaskListName.text.toString()
+                if (listName.isNotEmpty()) {
+                    if (context is TaskListActivity) {
+                        context.updateTaskList(position, listName, task)
+                    }
+                } else {
+                    Toast.makeText(context, "Please Enter List Name.", Toast.LENGTH_SHORT).show()
+                }
+            }
+            itemBinding.ibDeleteList.setOnClickListener {
+                alertDialogForDeleteList(context, position, task.title)
+            }
         }
+
+        private fun alertDialogForDeleteList(context: Context, position: Int, title: String) {
+            val builder = AlertDialog.Builder(context)
+            builder.setTitle("Alert")
+            builder.setMessage("Are you sure you want to delete $title?")
+            builder.setIcon(android.R.drawable.ic_dialog_alert)
+            //performing positive action
+            builder.setPositiveButton("Yes") { dialogInterface, which ->
+                dialogInterface.dismiss()
+                if (context is TaskListActivity) {
+                    context.deleteTaskList(position)
+                }
+            }
+            //performing negative action
+            builder.setNegativeButton("No") { dialogInterface, which ->
+                dialogInterface.dismiss()
+            }
+            //create the AlertDialog
+            val alertDialog: AlertDialog = builder.create()
+            alertDialog.setCancelable(false)
+            alertDialog.show()
+        }
+
         fun setListInVisible() {
             itemBinding.tvAddTaskList.visibility = View.VISIBLE
             itemBinding.llTaskItem.visibility = View.GONE
@@ -68,7 +113,7 @@ class TaskListItemsAdapter (private val context: Context, var taskList: ArrayLis
         } else {
             holder.setListVisible()
         }
-        holder.bind(context, task)
+        holder.bind(context, position, task)
     }
 
     override fun getItemCount(): Int {
