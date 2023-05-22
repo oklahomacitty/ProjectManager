@@ -6,8 +6,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
+import com.example.projectmanager.activity.TaskListActivity
 import com.example.projectmanager.databinding.ItemTaskBinding
+import com.example.projectmanager.models.Board
 import com.example.projectmanager.models.Task
 
 class TaskListItemsAdapter (private val context: Context, var taskList: ArrayList<Task>)
@@ -16,11 +19,32 @@ class TaskListItemsAdapter (private val context: Context, var taskList: ArrayLis
 
     class ViewHolder(private val itemBinding: ItemTaskBinding) :
         RecyclerView.ViewHolder(itemBinding.root) {
+        fun bind(context: Context, task: Task) {
+            itemBinding.tvTaskListTitle.text = task.title
+            itemBinding.tvAddTaskList.setOnClickListener {
+                itemBinding.tvAddTaskList.visibility = View.GONE
+                itemBinding.cvAddTaskListName.visibility = View.VISIBLE
+            }
+            itemBinding.ibCloseListName.setOnClickListener {
+                itemBinding.tvAddTaskList.visibility = View.VISIBLE
+                itemBinding.cvAddTaskListName.visibility = View.GONE
+            }
+
+            itemBinding.ibDoneListName.setOnClickListener {
+                val listName = itemBinding.etTaskListName.text.toString()
+                if (listName.isNotEmpty()) {
+                    if (context is TaskListActivity) {
+                        context.createTaskList(listName)
+                    }
+                } else {
+                    Toast.makeText(context, "Please Enter List Name.", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
         fun setListInVisible() {
             itemBinding.tvAddTaskList.visibility = View.VISIBLE
             itemBinding.llTaskItem.visibility = View.GONE
         }
-
         fun setListVisible() {
             itemBinding.tvAddTaskList.visibility = View.GONE
             itemBinding.llTaskItem.visibility = View.VISIBLE
@@ -44,6 +68,7 @@ class TaskListItemsAdapter (private val context: Context, var taskList: ArrayLis
         } else {
             holder.setListVisible()
         }
+        holder.bind(context, task)
     }
 
     override fun getItemCount(): Int {
